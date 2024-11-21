@@ -12,7 +12,7 @@ Welcome to **Davoice WakeWord / Keywords Detection** – Wake words and keyword 
 
 ## Flutter support
 
-We have a full flutter support with npm package however it is only coming soon to this repository. If you need something now please contact us at: info@davoice.io
+We have a full flutter support with Pub package however it is only coming soon to this repository. If you need something now please contact us at: info@davoice.io
 
 ## Contact
 
