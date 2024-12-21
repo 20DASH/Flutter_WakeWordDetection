@@ -12,7 +12,11 @@ Welcome to **Davoice WakeWord / Keywords Detection** – Wake words and keyword 
 
 ## Flutter support
 
-We have a full flutter support with Pub package however it is only coming soon to this repository. If you need something now please contact us at: info@davoice.io
+Please install our flutter_wake_word pub - see:
+
+https://pub.dev/packages/flutter_wake_word
+
+If you need supoort contact us at: info@davoice.io
 
 ## Contact
 
