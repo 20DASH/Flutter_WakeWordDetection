@@ -1,0 +1,63 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_wake_word (1.0.0):
+    - Flutter
+    - ios-voice-processor (~> 1.2.0)
+    - onnxruntime-objc (~> 1.18.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - ios-voice-processor (1.2.0)
+  - ios_microphone_permission (0.0.1):
+    - Flutter
+  - onnxruntime-c (1.18.0)
+  - onnxruntime-objc (1.18.0):
+    - onnxruntime-objc/Core (= 1.18.0)
+  - onnxruntime-objc/Core (1.18.0):
+    - onnxruntime-c (= 1.18.0)
+  - permission_handler_apple (9.3.0):
+    - Flutter
+  - record_darwin (1.0.0):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_wake_word (from `.symlinks/plugins/flutter_wake_word/ios`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - ios_microphone_permission (from `.symlinks/plugins/ios_microphone_permission/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - record_darwin (from `.symlinks/plugins/record_darwin/ios`)
+
+SPEC REPOS:
+  trunk:
+    - ios-voice-processor
+    - onnxruntime-c
+    - onnxruntime-objc
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_wake_word:
+    :path: ".symlinks/plugins/flutter_wake_word/ios"
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  ios_microphone_permission:
+    :path: ".symlinks/plugins/ios_microphone_permission/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  record_darwin:
+    :path: ".symlinks/plugins/record_darwin/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_wake_word: 99bf0309c3f8fd159e029f8a86b8eb2c736b2f56
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  ios-voice-processor: 6b5ca08962f39e434fe39dca0f483d923a3b1b97
+  ios_microphone_permission: 3b9f0d6ca71325adc7095d89fa8c391b609a6f30
+  onnxruntime-c: a909204639a1f035f575127ac406f781ac797c9c
+  onnxruntime-objc: b6fab0f1787aa6f7190c2013f03037df4718bd8b
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  record_darwin: 3b1a8e7d5c0cbf45ad6165b4d83a6ca643d929c3
+
+PODFILE CHECKSUM: c753cd60bf1024a035a10298d41f56ec28358e9e
+
+COCOAPODS: 1.15.2

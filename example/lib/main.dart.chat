@@ -1,0 +1,136 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:io'; // Added this import
+import 'package:flutter/services.dart';
+import 'package:flutter_wake_word/flutter_wake_word.dart';
+import 'package:flutter_wake_word/use_model.dart';
+import 'package:flutter_wake_word/instance_config.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+class WakeWordApp extends StatefulWidget {
+  @override
+  _WakeWordAppState createState() => _WakeWordAppState();
+}
+
+class _WakeWordAppState extends State<WakeWordApp> {
+  String message = "Listening to WakeWord...";
+  bool isFlashing = false;
+  final List<InstanceConfig> instanceConfigs = [
+    InstanceConfig(
+      id: 'need_help_now',
+      modelName: 'need_help_now.onnx',
+      threshold: 0.9999,
+      bufferCnt: 3,
+      sticky: false,
+    ),
+  ];
+
+  Future<void> initializeKeywordDetection(List<InstanceConfig> configs) async {
+    try {
+      final useModel = UseModel();
+
+      print("After requestAudioPermissions:");
+
+      print("useModel == : $useModel");
+      await useModel.setKeywordDetectionLicense(
+        "MTczNDIxMzYwMDAwMA==-tNV5HJ3NTRQCs5IpOe0imza+2PgPCJLRdzBJmMoJvok=",
+      );
+      print("After useModel.setKeywordDetectionLicense:");
+
+      await useModel.loadModel(configs, onWakeWordDetected);
+      print("After useModel.loadModel:");
+    } catch (e) {
+      print("Error initializing keyword detection: $e");
+    }
+  }
+
+  Future<void> openSettings() async {
+    if (await Permission.microphone.isPermanentlyDenied) {
+      print('Microphone permission permanently denied.');
+      await openAppSettings();
+    } else {
+      print('Microphone permission denied.');
+    }
+  }
+
+  Future<void> requestAudioPermissions() async {
+    var status = await Permission.microphone.status;
+
+    if (status.isDenied) {
+      status = await Permission.microphone.request();
+    }
+
+    if (status.isGranted) {
+      print('Microphone permission granted.');
+      if (Platform.isAndroid) {
+        var foregroundServicePermission =
+            await Permission.systemAlertWindow.request();
+        if (!foregroundServicePermission.isGranted) {
+          foregroundServicePermission = await Permission.systemAlertWindow.request();
+        }
+      }
+      initializeKeywordDetection(instanceConfigs);
+    } else {
+      print('Microphone permission denied.');
+      openSettings();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    requestAudioPermissions();
+  }
+
+  void onWakeWordDetected(String wakeWord) {
+    print("onWakeWordDetected(): $wakeWord");
+
+    message = "WakeWord '$wakeWord' DETECTED";
+    setState(() {
+      message = "WakeWord '$wakeWord' DETECTED";
+      isFlashing = true;
+    });
+
+    Future.delayed(Duration(seconds: 5), () {
+      setState(() {
+        message = "Listening to WakeWord...";
+        isFlashing = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final backgroundColor = isFlashing
+        ? (isDarkMode ? Colors.red[400] : Colors.red[100])
+        : (isDarkMode ? Colors.black : Colors.white);
+
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDarkMode
+                ? [Colors.grey[800]!, Colors.grey[900]!]
+                : [Colors.blue[50]!, Colors.blue[100]!],
+          ),
+        ),
+        child: Center(
+          child: Container(
+            color: backgroundColor,
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              message,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
