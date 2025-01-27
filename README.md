@@ -1,7 +1,7 @@
 # Flutter_WakeWordDetection
 
 [![GitHub release](https://img.shields.io/github/release/frymanofer/KeyWordDetectionIOSFramework.svg)](https://github.com/frymanofer/KeyWordDetectionIOSFramework/releases)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 By [DaVoice.io](https://davoice.io)
 
@@ -10,38 +10,181 @@ By [DaVoice.io](https://davoice.io)
 
 Welcome to **Davoice WakeWord / Keywords Detection** – Wake words and keyword detection solution designed by **DaVoice.io**.
 
-## Flutter support
+## About this project
 
-Please install our flutter_wake_word pub - see:
+This is a **"wake word"** package for **"Flutter"**. A wake word is a keyword that activates your device, like "Hey Siri" or "OK Google". "Wake Word" is also known as "keyword detection", "Phrase Recognition", "Phrase Spotting", “Voice triggered”, “hotword”, “trigger word”
 
-https://pub.dev/packages/flutter_wake_word
+It also provide **Speech to Intent**. **Speech to Intent** refers to the ability to recognize a spoken word or phrase
+and directly associate it with a specific action or operation within an application. Unlike a **"wake word"**, which typically serves to activate or wake up the application,
+Speech to Intent goes further by enabling complex interactions and functionalities based on the recognized intent behind the speech.
+
+For example, a wake word like "Hey App" might activate the application, while Speech
+to Intent could process a phrase like "Play my favorite song" or "Order a coffee" to
+execute corresponding tasks within the app.
+Speech to Intent is often triggered after a wake word activates the app, making it a key
+component of more advanced voice-controlled applications. This layered approach allows for
+seamless and intuitive voice-driven user experiences.
+
+## Flutter wake word detection.
+
+Add "flutter_wake_word" pub to your pubspec.yaml file as in the example folder.
+
+Add the below if you want always the latest version or specify a version:
+
+pubspec.yaml:
+```
+dependencies:
+.....
+
+  flutter_wake_word:
+    # Use the latest version.
+```
+
+link: https://pub.dev/packages/flutter_wake_word
 
 If you need supoort contact us at: info@davoice.io
 
-## Contact
-
-For any questions, requirements, or more support for React-Native, please contact us at info@davoice.io.
-
-## Latest news
-
-
 ## Features
+
+- **High Accuracy:** We have succesfully reached over 99% accurary for all our models. **Here is on of our customer's benchmarks**:
+
+```
+MODEL         DETECTION RATE
+===========================
+DaVoice        0.992481
+Top Player     0.874812
+Third          0.626567
+```
+
+- **Easy to deploy with Flutter:** Check out our example. With a few simple lines of code, you have your own keyword detecting enabled app.
+- **Low Latency:** Experience near-instantaneous keyword detection.
 
 ## Platforms and Supported Languages
 
+- **Wake word for Android and IOS:** Flutter for both IOS and Android.
+
+# Wake word generator
+
+## Create your "custom wake word""
+
+In order to generate your custom wake word you will need to:
+
+- **Create wake word mode:**
+    Contact us at info@davoice.io with a list of your desired **"custom wake words"**.
+
+    We will send you corresponding models typically your **wake word phrase .onnx** for example:
+
+    A wake word ***"hey sky"** will correspond to **hey_sky.onnx**.
+
+- **Add wake words to Android:**
+    Simply copy the new onnx files to:
+
+    android/app/src/main/assets/*.onnx
+
+- **Add Wake word to IOS**
+    Copy new models somewhere under ios/YourProjectName.
+
+    You can create a folder ios/YourProjectName/models/ and copy there there.
+
+    Now add each onnx file to xcode making sure you opt-in “copy if needed”.
+
+- **In Dart code add the new onnx files to your configuration**
+  
+    Change:
+
+```
+  final List<InstanceConfig> instanceConfigs = [
+    InstanceConfig(
+      id: 'need_help_now',
+      modelName: 'need_help_now.onnx',
+      threshold: 0.9999,
+      bufferCnt: 3,
+      sticky: false,
+    ),
+  ];
+```
+
+To your generated custom wake word, for example if you wake word is "hey sky":
+
+```
+  final List<InstanceConfig> instanceConfigs = [
+    InstanceConfig(
+      id: 'hey_sky',
+      modelName: 'hey_sky.onnx',
+      threshold: 0.9999,
+      bufferCnt: 3,
+      sticky: false,
+    ),
+  ];
+
+```
+
+- **Last step - Rebuild your project**
+
+## Contact
+
+For any questions, requirements, or more support for Flutter, please contact us at info@davoice.io.
+
 ## Installation and Usage
 
-### Simply using npm install - package
+## Benchmark.
 
-### Demo Instructions
+Our customers have benchmarked our technology against leading solutions, including Picovoice Porcupine, Snowboy, Pocketsphinx, Sensory, and others. 
+In several tests, our performance was comparable to Picovoice Porcupine, occasionally surpassing it, however both technologies consistently outperformed all others in specific benchmarks. 
+For detailed references or specific benchmark results, please contact us at ofer@davoice.io.
+
+## Activating Microphone while the app operates in the background or during shutdown/closure.
+This example in the Git repository enables Android functionality in both the foreground and background, and iOS functionality in the foreground. However, we have developed an advanced SDK that allows the microphone to be activated from a complete shutdown state on Android and from the background state on iOS. If you require this capability for your app, please reach out to us at ofer@davoice.io.
+
+### Key words
+
+DaVoice.io Voice commands / Wake words / Voice to Intent / keyword detection npm for Android and IOS.
+"Wake word detection github"
+"Wake Word" 
+"keyword detection"
+"Phrase Recognition"
+"Phrase Spotting"
+“Voice triggered”
+“hotword”
+“trigger word”
+"Flutter wake word",
+"Wake word detection github",
+"Wake word generator",
+"Custom wake word",
+"voice commands",
+"wake word",
+"wakeword",
+"wake words",
+"keyword detection",
+"keyword spotting",
+"speech to intent",
+"voice to intent",
+"phrase spotting",
+"react native wake word",
+"Davoice.io wake word",
+"Davoice wake word",
+"Davoice react native wake word",
+"Davoice Flutter wake word",
+"wake",
+"word",
+"Voice Commands Recognition",
+"lightweight Voice Commands Recognition",
+"customized lightweight Voice Commands Recognition",
+"rn wake word"
+
 ## Links
+
+- **Wake word pub package:** https://pub.dev/packages/flutter_wake_word
 
 Here are wakeword detection GitHub links per platform:
 
 - **For Python:** https://github.com/frymanofer/Python_WakeWordDetection
 - **Web / JS / Angular / React:** https://github.com/frymanofer/Web_WakeWordDetection/tree/main
 - **For React Native:** [ReactNative_WakeWordDetection](https://github.com/frymanofer/ReactNative_WakeWordDetection)
+- **For Flutter:** [https://github.com/frymanofer/Flutter_WakeWordDetection]
 - **For Android:** [KeywordsDetectionAndroidLibrary](https://github.com/frymanofer/KeywordsDetectionAndroidLibrary)
 - **For iOS framework:** 
   - With React Native bridge: [KeyWordDetectionIOSFramework](https://github.com/frymanofer/KeyWordDetectionIOSFramework)
   - Sole Framework: [KeyWordDetection](https://github.com/frymanofer/KeyWordDetection)
+ 
+  
