@@ -27,8 +27,6 @@ class _WakeWordAppState extends State<WakeWordApp> {
   final _flutterWakeWordPlugin = FlutterWakeWord();
   bool isFlashing = false;
   String _platformVersion = 'Unknown';
-//  final EventChannel eventChannel = EventChannel('flutter_wake_word/event');
-// Remove 
   final useModel = UseModel(); // Single instance of UseModel
 
   final List<InstanceConfig> instanceConfigs = [
@@ -40,22 +38,7 @@ class _WakeWordAppState extends State<WakeWordApp> {
       sticky: false,
     ),
   ];
-/*
-  void startListeningToEvents() {
-    eventChannel.receiveBroadcastStream().listen(
-      (event) {
-        print('Event received: $event');
-        final phrase = event['phrase'];
-        if (phrase != null) {
-          onWakeWordDetected(phrase);
-        }
-      },
-      onError: (error) {
-        print('Error: $error');
-      },
-    );
-  }
-*/
+
   Future<void> initializeKeywordDetection(List<InstanceConfig> configs) async {
     try {
 
