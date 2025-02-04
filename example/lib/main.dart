@@ -46,7 +46,7 @@ class _WakeWordAppState extends State<WakeWordApp> {
 
       print("useModel == : $useModel");
       await useModel.setKeywordDetectionLicense(
-        "MTczODEwMTYwMDAwMA==-Vmv1jwEG+Fbog9LoblZnVT4TzAXDhZs7l9O18A+8ul8=",
+        "MTczOTU3MDQwMDAwMA==-+2/cH2HBQz3/SsDidS6qvIgc8KxGH5cbvSVM/6qmk3Q="
       );
       print("After useModel.setKeywordDetectionLicense:");
 
