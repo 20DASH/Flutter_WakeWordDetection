@@ -67,6 +67,71 @@ Third          0.626567
 
 - **Wake word for Android and IOS:** Flutter for both IOS and Android.
 
+# Android
+
+🛠️ Android Changes Required due to optimized battery usage - adding libc++_shared.so
+
+Flutter does not include libc++_shared.so by default therefore I added them to the example application.
+
+If your app does not have these libraries you that depend on C++, you must also manually add this shared library to your Android app.
+
+✅ Step 1: Modify example/android/app/build.gradle
+
+```
+android {
+    namespace = "com.example.flutter_wake_word_example"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jniLibs'] // Ensure JNI libraries are included
+        }
+    }
+
+    // 1) Add packagingOptions
+    packagingOptions {
+        // Avoid duplicate-file errors and ensure libc++_shared.so is included
+        pickFirst "lib/armeabi-v7a/libc++_shared.so"
+        pickFirst "lib/arm64-v8a/libc++_shared.so"
+        pickFirst "lib/x86/libc++_shared.so"
+        pickFirst "lib/x86_64/libc++_shared.so"
+        pickFirst '**/libc++_shared.so' // Ensures it's included in case of conflicts
+    }
+}
+```
+
+✅ Step 2: Add libc++_shared.so to Your App
+
+Manually place the libc++_shared.so file in the correct directories:
+
+```
+example/android/app/src/main/jniLibs/arm64-v8a/libc++_shared.so
+example/android/app/src/main/jniLibs/armeabi-v7a/libc++_shared.so
+example/android/app/src/main/jniLibs/x86/libc++_shared.so
+example/android/app/src/main/jniLibs/x86_64/libc++_shared.so
+```
+
+✅ Step 3: Modify example/android/build.gradle
+
+Ensure that your example/android/build.gradle includes the following repository paths:
+
+```
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "${project.projectDir}/libs" } // Plugin's local libs directory
+	    maven { url "${project(":flutter_wake_word").projectDir}/libs" }
+        maven { url("${project(':flutter_wake_word').projectDir}/libs") } 
+        maven {
+            url("${project(':flutter_wake_word').projectDir}/libs")
+        }
+        mavenLocal()
+    }
+}
+```
+
 # Wake word generator
 
 ## Create your "custom wake word""
