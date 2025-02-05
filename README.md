@@ -25,6 +25,10 @@ Speech to Intent is often triggered after a wake word activates the app, making 
 component of more advanced voice-controlled applications. This layered approach allows for
 seamless and intuitive voice-driven user experiences.
 
+## News.
+
+Just released flutter_wake_word version 13 which includes **optimized Android wake word with 1.2% battery usage per hour!!**
+
 ## Flutter wake word detection.
 
 Add "flutter_wake_word" pub to your pubspec.yaml file as in the example folder.
