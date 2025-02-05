@@ -124,7 +124,6 @@ class _WakeWordAppState extends State<WakeWordApp> {
     startMemoryMonitoring();
     initPlatformState();
     requestAudioPermissions();
-    // startListeningToEvents();
   }
 
   void onWakeWordDetected(String wakeWord) {
@@ -141,8 +140,8 @@ class _WakeWordAppState extends State<WakeWordApp> {
 
     Future.delayed(Duration(seconds: 5), () {
       setState(() {
-        //useModel.startListening();
-        //message = "Listening to WakeWord...";
+        useModel.startListening();
+        message = "Listening to WakeWord...";
         isFlashing = false;
       });
     });
