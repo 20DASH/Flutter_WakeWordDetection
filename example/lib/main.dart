@@ -28,6 +28,25 @@ class _WakeWordAppState extends State<WakeWordApp> {
   bool isFlashing = false;
   String _platformVersion = 'Unknown';
   final useModel = UseModel(); // Single instance of UseModel
+  // START: Memory Monitoring Code
+
+  Timer? _memoryTimer;
+
+  void startMemoryMonitoring() {
+    _memoryTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+      double memoryUsageMB = ProcessInfo.currentRss / (1024 * 1024);
+      print("Memory Usage: ${memoryUsageMB.toStringAsFixed(2)} MB");
+    });
+  }
+
+  @override
+  void dispose() {
+    _memoryTimer?.cancel(); // Stop monitoring when the widget is disposed
+    super.dispose();
+  }
+
+// END: Memory Monitoring Code
+
 
   final List<InstanceConfig> instanceConfigs = [
     InstanceConfig(
@@ -102,6 +121,7 @@ class _WakeWordAppState extends State<WakeWordApp> {
   @override
   void initState() {
     super.initState();
+    startMemoryMonitoring();
     initPlatformState();
     requestAudioPermissions();
     // startListeningToEvents();
@@ -121,8 +141,8 @@ class _WakeWordAppState extends State<WakeWordApp> {
 
     Future.delayed(Duration(seconds: 5), () {
       setState(() {
-        useModel.startListening();
-        message = "Listening to WakeWord...";
+        //useModel.startListening();
+        //message = "Listening to WakeWord...";
         isFlashing = false;
       });
     });
