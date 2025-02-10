@@ -1,3 +1,6 @@
+# If you need to run both static and dynamic links the below plugin can help 
+# Plugin 'cocoapods-pod-linkage'  # Enable per-pod linkage
+
 # Uncomment this line to define a global platform for your project
 platform :ios, '15.1'  # Match the minimum iOS version in your podspec
 
@@ -30,8 +33,8 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
+  use_modular_headers!
   use_frameworks!
-    use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
