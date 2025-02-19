@@ -22,6 +22,13 @@ class WakeWordApp extends StatefulWidget {
   _WakeWordAppState createState() => _WakeWordAppState();
 }
 
+// We use a class just for clarity, or we can store a Map:
+class _MemoryReading {
+  final DateTime timestamp;
+  final double memoryMB;
+  _MemoryReading(this.timestamp, this.memoryMB);
+}
+
 class _WakeWordAppState extends State<WakeWordApp> {
   String message = "Listening to WakeWord...";
   final _flutterWakeWordPlugin = FlutterWakeWord();
@@ -29,15 +36,56 @@ class _WakeWordAppState extends State<WakeWordApp> {
   String _platformVersion = 'Unknown';
   final useModel = UseModel(); // Single instance of UseModel
   // START: Memory Monitoring Code
+// Inside your _WakeWordAppState:
 
+DateTime? _appStartTime;             // When the app starts
+List<_MemoryReading> _memoryReadings = [];
   Timer? _memoryTimer;
 
-  void startMemoryMonitoring() {
-    _memoryTimer = Timer.periodic(Duration(seconds: 5), (timer) {
-      double memoryUsageMB = ProcessInfo.currentRss / (1024 * 1024);
-      print("Memory Usage: ${memoryUsageMB.toStringAsFixed(2)} MB");
-    });
-  }
+void startMemoryMonitoring() {
+  // Record the time we started
+  _appStartTime ??= DateTime.now();
+
+  _memoryTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    final now = DateTime.now();
+
+    // Current memory usage
+    final memoryUsageMB = ProcessInfo.currentRss / (1024 * 1024);
+
+    // Save it in our list
+    _memoryReadings.add(_MemoryReading(now, memoryUsageMB));
+
+    // 1) Print the exact timestamp + memory usage
+    print("[${now.toIso8601String()}] Current Memory Usage: "
+          "${memoryUsageMB.toStringAsFixed(2)} MB");
+
+    // 2) Compute min & max AFTER first 3 minutes
+    final threeMinutesAfterStart = _appStartTime!.add(const Duration(minutes: 3));
+    final validAllTimeReadings = _memoryReadings.where((r) => r.timestamp.isAfter(threeMinutesAfterStart)).toList();
+
+    if (validAllTimeReadings.isNotEmpty) {
+      final minAllTime = validAllTimeReadings.map((r) => r.memoryMB).reduce((a, b) => a < b ? a : b);
+      final maxAllTime = validAllTimeReadings.map((r) => r.memoryMB).reduce((a, b) => a > b ? a : b);
+      print("  All-time (post-3min) Min: ${minAllTime.toStringAsFixed(2)} MB "
+            "Max: ${maxAllTime.toStringAsFixed(2)} MB");
+    } else {
+      print("  (Not computing all-time min/max until 3 minutes pass.)");
+    }
+
+    // 3) Compute min & max for the last hour
+    final oneHourAgo = now.subtract(const Duration(hours: 1));
+    final lastHourReadings = _memoryReadings.where((r) => r.timestamp.isAfter(oneHourAgo)).toList();
+
+    if (lastHourReadings.isNotEmpty) {
+      final minLastHour = lastHourReadings.map((r) => r.memoryMB).reduce((a, b) => a < b ? a : b);
+      final maxLastHour = lastHourReadings.map((r) => r.memoryMB).reduce((a, b) => a > b ? a : b);
+      print("  Last hour    Min: ${minLastHour.toStringAsFixed(2)} MB "
+            "Max: ${maxLastHour.toStringAsFixed(2)} MB");
+    } else {
+      print("  (No readings in the last hour yet.)");
+    }
+  });
+}
 
   @override
   void dispose() {
@@ -65,7 +113,7 @@ class _WakeWordAppState extends State<WakeWordApp> {
 
       print("useModel == : $useModel");
       await useModel.setKeywordDetectionLicense(
-        "MTc0MTk4OTYwMDAwMA==-T6tBtoFpClll7ef89x/bOXRxC9Maf2nZTUFXqBKwnc0="ֿ
+        "MTc0MTk4OTYwMDAwMA==-T6tBtoFpClll7ef89x/bOXRxC9Maf2nZTUFXqBKwnc0="
         );
       print("After useModel.setKeywordDetectionLicense:");
 
