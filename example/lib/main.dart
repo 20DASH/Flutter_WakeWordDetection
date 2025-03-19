@@ -43,48 +43,91 @@ List<_MemoryReading> _memoryReadings = [];
   Timer? _memoryTimer;
 
 void startMemoryMonitoring() {
-  // Record the time we started
   _appStartTime ??= DateTime.now();
 
   _memoryTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
     final now = DateTime.now();
-
-    // Current memory usage
     final memoryUsageMB = ProcessInfo.currentRss / (1024 * 1024);
 
-    // Save it in our list
+    // Record new reading
     _memoryReadings.add(_MemoryReading(now, memoryUsageMB));
 
-    // 1) Print the exact timestamp + memory usage
-    print("[${now.toIso8601String()}] Current Memory Usage: "
-          "${memoryUsageMB.toStringAsFixed(2)} MB");
+    // --- 1) Print current memory usage first, short date/time
+    final timeStamp = _simpleDateTime(now); 
+    print("Curr-Mem Usg: ${memoryUsageMB.toStringAsFixed(2)}MB [$timeStamp]");
 
-    // 2) Compute min & max AFTER first 3 minutes
-    final threeMinutesAfterStart = _appStartTime!.add(const Duration(minutes: 3));
-    final validAllTimeReadings = _memoryReadings.where((r) => r.timestamp.isAfter(threeMinutesAfterStart)).toList();
-
-    if (validAllTimeReadings.isNotEmpty) {
-      final minAllTime = validAllTimeReadings.map((r) => r.memoryMB).reduce((a, b) => a < b ? a : b);
-      final maxAllTime = validAllTimeReadings.map((r) => r.memoryMB).reduce((a, b) => a > b ? a : b);
-      print("  All-time (post-3min) Min: ${minAllTime.toStringAsFixed(2)} MB "
-            "Max: ${maxAllTime.toStringAsFixed(2)} MB");
-    } else {
-      print("  (Not computing all-time min/max until 3 minutes pass.)");
-    }
-
-    // 3) Compute min & max for the last hour
+    // --- 2) Last hour min/max + delta
     final oneHourAgo = now.subtract(const Duration(hours: 1));
     final lastHourReadings = _memoryReadings.where((r) => r.timestamp.isAfter(oneHourAgo)).toList();
-
     if (lastHourReadings.isNotEmpty) {
-      final minLastHour = lastHourReadings.map((r) => r.memoryMB).reduce((a, b) => a < b ? a : b);
-      final maxLastHour = lastHourReadings.map((r) => r.memoryMB).reduce((a, b) => a > b ? a : b);
-      print("  Last hour    Min: ${minLastHour.toStringAsFixed(2)} MB "
-            "Max: ${maxLastHour.toStringAsFixed(2)} MB");
+      final minLast = lastHourReadings.map((r) => r.memoryMB).reduce((a, b) => a < b ? a : b);
+      final maxLast = lastHourReadings.map((r) => r.memoryMB).reduce((a, b) => a > b ? a : b);
+      final minDelta = (memoryUsageMB - minLast).toStringAsFixed(2);
+      final maxDelta = (memoryUsageMB - maxLast).toStringAsFixed(2);
+
+      print("Last hour Min:${minLast.toStringAsFixed(2)}MB "
+            "Max:${maxLast.toStringAsFixed(2)}MB. "
+            "Min delta ${minDelta}MB, Max delta ${maxDelta}MB");
     } else {
-      print("  (No readings in the last hour yet.)");
+      print("(No readings in the last hour yet.)");
+    }
+
+    // --- 3) The “InitMaxMin” window from 3 minutes to 13 minutes
+    // i.e. we ignore everything before 3min or after 13min of app start
+    final initMinStart = _appStartTime!.add(const Duration(minutes: 3));
+    final initMinEnd   = _appStartTime!.add(const Duration(minutes: 13));
+
+    final initWindowReadings = _memoryReadings.where((r) {
+      return r.timestamp.isAfter(initMinStart) && r.timestamp.isBefore(initMinEnd);
+    }).toList();
+
+    // Show how long we've been running
+    final startedAgo = now.difference(_appStartTime!);
+    final startedAgoStr = _humanDuration(startedAgo);
+
+    if (initWindowReadings.isNotEmpty) {
+      final minInit = initWindowReadings.map((r) => r.memoryMB).reduce((a, b) => a < b ? a : b);
+      final maxInit = initWindowReadings.map((r) => r.memoryMB).reduce((a, b) => a > b ? a : b);
+      final minDeltaInit = (memoryUsageMB - minInit).toStringAsFixed(2);
+      final maxDeltaInit = (memoryUsageMB - maxInit).toStringAsFixed(2);
+
+      print("InitMaxMin(3-13min), started $startedAgoStr ago. "
+            "Min:${minInit.toStringAsFixed(2)}MB Max:${maxInit.toStringAsFixed(2)}MB. "
+            "Min delta ${minDeltaInit}MB, Max delta ${maxDeltaInit}MB");
+    } else {
+      print("InitMaxMin(3-13min): no data in [3..13] min window yet (started $startedAgoStr ago).");
     }
   });
+}
+
+
+/// Returns "YYYY-MM-DD HH:MM" from a DateTime
+String _simpleDateTime(DateTime dt) {
+  final y = dt.year.toString().padLeft(4, '0');
+  final m = dt.month.toString().padLeft(2, '0');
+  final d = dt.day.toString().padLeft(2, '0');
+  final hh = dt.hour.toString().padLeft(2, '0');
+  final mm = dt.minute.toString().padLeft(2, '0');
+  return "$y-$m-$d $hh:$mm";
+}
+
+/// Converts a Duration to a short "2h10m" or "5m30s" format
+String _humanDuration(Duration diff) {
+  final hours = diff.inHours;
+  final minutes = diff.inMinutes.remainder(60);
+  final seconds = diff.inSeconds.remainder(60);
+
+  if (hours > 0 && minutes > 0) {
+    return "${hours}h${minutes}m";
+  } else if (hours > 0) {
+    return "${hours}h";
+  } else if (minutes > 0 && seconds > 0) {
+    return "${minutes}m${seconds}s";
+  } else if (minutes > 0) {
+    return "${minutes}m";
+  } else {
+    return "${seconds}s";
+  }
 }
 
   @override
@@ -113,7 +156,7 @@ void startMemoryMonitoring() {
 
       print("useModel == : $useModel");
       await useModel.setKeywordDetectionLicense(
-        "MTc0MTk4OTYwMDAwMA==-T6tBtoFpClll7ef89x/bOXRxC9Maf2nZTUFXqBKwnc0="
+        "MTc0NDY2NDQwMDAwMA==-m4g05tL50nMcnOp4mu6NghsgkfXk1ZNVTPo26+2/Z0E="
         );
       print("After useModel.setKeywordDetectionLicense:");
 
