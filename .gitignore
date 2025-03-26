@@ -1,0 +1,9 @@
+example/android/app/.cxx/**
+example/mem_log*.txt
+example/memleak_vad_only.txt
+example/pubspec.lock
+example/reinstall.sh
+example/x
+example/y.txt
+example/ios/Podfile.lock
+example/scripts/embed_license.dart

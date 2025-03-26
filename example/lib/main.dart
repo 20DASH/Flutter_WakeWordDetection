@@ -17,6 +17,24 @@ void main() {
   ));
 }
 
+  final List<InstanceConfig> instanceConfigs = [
+    InstanceConfig(
+      id: 'hey_look_deep',
+      modelName: 'hey_lookdeep.onnx',
+      threshold: 0.999,
+      bufferCnt: 5,
+      sticky: false,
+    ),
+  ];
+
+final String parsedId = instanceConfigs.first.id.replaceAll('_', ' ').splitMapJoin(
+  RegExp(r'\b\w'),
+  onMatch: (m) => m.group(0)!.toUpperCase(),
+  onNonMatch: (n) => n,
+);
+
+String message = 'Listening to WakeWord:\n$parsedId';
+
 class WakeWordApp extends StatefulWidget {
   @override
   _WakeWordAppState createState() => _WakeWordAppState();
@@ -30,7 +48,7 @@ class _MemoryReading {
 }
 
 class _WakeWordAppState extends State<WakeWordApp> {
-  String message = "Listening to WakeWord...";
+  //String message = "Listening to WakeWord...";
   final _flutterWakeWordPlugin = FlutterWakeWord();
   bool isFlashing = false;
   String _platformVersion = 'Unknown';
@@ -139,15 +157,6 @@ String _humanDuration(Duration diff) {
 // END: Memory Monitoring Code
 
 
-  final List<InstanceConfig> instanceConfigs = [
-    InstanceConfig(
-      id: 'need_help_now',
-      modelName: 'need_help_now.onnx',
-      threshold: 0.9999,
-      bufferCnt: 3,
-      sticky: false,
-    ),
-  ];
 
   Future<void> initializeKeywordDetection(List<InstanceConfig> configs) async {
     try {
@@ -232,7 +241,7 @@ String _humanDuration(Duration diff) {
     Future.delayed(Duration(seconds: 5), () {
       setState(() {
         useModel.startListening();
-        message = "Listening to WakeWord...";
+        message = 'Listening to WakeWord:\n$parsedId';
         isFlashing = false;
       });
     });

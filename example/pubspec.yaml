@@ -23,7 +23,7 @@ dependencies:
 #  permission_handler_platform_interface: 4.2.3
 #  permission_handler_windows: 0.2.1
 
-  flutter_wake_word: 0.0.27
+  flutter_wake_word: 0.0.31
     # Use the latest version.
   
   speech_to_text: ^7.0.0
