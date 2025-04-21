@@ -165,8 +165,8 @@ String _humanDuration(Duration diff) {
 
       print("useModel == : $useModel");
       await useModel.setKeywordDetectionLicense(
-        "MTc0NDY2NDQwMDAwMA==-m4g05tL50nMcnOp4mu6NghsgkfXk1ZNVTPo26+2/Z0E="
-        );
+        "MTc0NzI1NjQwMDAwMA==-+8iM4SOprtUFdw7//VJCKj23UUr98HLUdvYDixtvRDo=");
+
       print("After useModel.setKeywordDetectionLicense:");
 
       await useModel.loadModel(configs, onWakeWordDetected);
