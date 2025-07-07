@@ -17,23 +17,36 @@ void main() {
   ));
 }
 
-  final List<InstanceConfig> instanceConfigs = [
-    InstanceConfig(
-      id: 'hey_look_deep',
-      modelName: 'hey_lookdeep.onnx',
-      threshold: 0.999,
-      bufferCnt: 5,
-      sticky: false,
-    ),
-  ];
+// Old way:
+  // final List<InstanceConfig> instanceConfigs = [
+  //   InstanceConfig(
+  //     id: 'hey_look_deep',
+  //     modelName: 'hey_lookdeep.onnx',
+  //     threshold: 0.999,
+  //     bufferCnt: 5,
+  //     sticky: false,
+  //   ),
+  // ];
 
-final String parsedId = instanceConfigs.first.id.replaceAll('_', ' ').splitMapJoin(
-  RegExp(r'\b\w'),
-  onMatch: (m) => m.group(0)!.toUpperCase(),
-  onNonMatch: (n) => n,
+// New Efficient way:
+final MultiInstanceConfig multiInstanceConfig = MultiInstanceConfig(
+  id: 'wakeword_group_1',
+  modelNames: ['hey_lookdeep.onnx', 'coca_cola_model_28_05052025.onnx', 'need_help_now.onnx'],
+  thresholds: [0.999, 0.999, 0.999],
+  bufferCnts: [4, 4, 4],
+  msBetweenCallback: [1000, 1000, 1000],
+  sticky: false,
 );
 
-String message = 'Listening to WakeWord:\n$parsedId';
+String message = 'Listening to WakeWords:\n' +
+    multiInstanceConfig.modelNames
+        .map((m) => m
+            .replaceAll(RegExp(r'_model.*$'), '')     // Remove _model and everything after
+            .replaceAll(RegExp(r'_\d.*$'), '')        // Fallback: remove _16, _28, etc.
+            .replaceAll('_', ' ')                     // Replace underscores with spaces
+            .replaceAll(RegExp(r'\.onnx'), '')        // Fallback: remove _16, _28, etc.
+            .trim())
+        .join('\n');
 
 class WakeWordApp extends StatefulWidget {
   @override
@@ -157,20 +170,19 @@ String _humanDuration(Duration diff) {
 // END: Memory Monitoring Code
 
 
-
-  Future<void> initializeKeywordDetection(List<InstanceConfig> configs) async {
+  Future<void> initializeKeywordDetection(MultiInstanceConfig config) async {
     try {
-
       print("After requestAudioPermissions:");
-
       print("useModel == : $useModel");
+
       await useModel.setKeywordDetectionLicense(
         "MTc1MjUyNjgwMDAwMA==-RbOr3R66OPByzZxLe7vgM6JDlrrejrgRzbo41+g8qrM=");
 
       print("After useModel.setKeywordDetectionLicense:");
 
-      await useModel.loadModel(configs, onWakeWordDetected);
-      print("After useModel.loadModel:");
+      await useModel.addInstanceMulti(config, onWakeWordDetected);
+
+      print("After useModel.addInstanceMulti:");
     } catch (e) {
       print("Error initializing keyword detection: $e");
     }
@@ -211,7 +223,7 @@ String _humanDuration(Duration diff) {
           foregroundServicePermission = await Permission.systemAlertWindow.request();
         }
       }
-      await initializeKeywordDetection(instanceConfigs);
+      await initializeKeywordDetection(multiInstanceConfig);
     } else {
       print('Microphone permission denied.');
       openSettings();
@@ -226,24 +238,43 @@ String _humanDuration(Duration diff) {
     requestAudioPermissions();
   }
 
-  void onWakeWordDetected(String wakeWord) {
-
-    print("onWakeWordDetected(): $wakeWord");
-    print("Calling stopListening(): $wakeWord");
+void onWakeWordDetected(Map<String, dynamic> event) {
+    final wakeWord = event['phrase'] as String?;
+    var wakeWordDetected = '';
+    if (wakeWord != null) {
+      wakeWordDetected = wakeWord.replaceAll(RegExp(r'_model.*$'), '')     // Remove _model and everything after
+              .replaceAll(RegExp(r'_\d.*$'), '')        // Fallback: remove _16, _28, etc.
+              .replaceAll('_', ' ')                     // Replace underscores with spaces
+              .replaceAll(RegExp(r'\.onnx'), '')        // Fallback: remove _16, _28, etc.
+              .trim();
+ 
+      print("onWakeWordDetected(): $wakeWordDetected");
+      print("Calling stopListening(): $wakeWordDetected");
+    } else {
+      print("onWakeWordDetected(): Invalid event, 'phrase' key not found");
+    }
     useModel.stopListening();
 
-    message = "WakeWord '$wakeWord' DETECTED";
+    message = "WakeWord '$wakeWordDetected' DETECTED";
     setState(() {
-      message = "WakeWord '$wakeWord' DETECTED";
+      message = "WakeWord '$wakeWordDetected' DETECTED";
       isFlashing = true;
     });
 
     Future.delayed(Duration(seconds: 5), () {
       setState(() {
         useModel.startListening();
-        message = 'Listening to WakeWord:\n$parsedId';
-        isFlashing = false;
-      });
+    message = 'Listening to WakeWords:\n' +
+      multiInstanceConfig.modelNames
+          .map((m) => m
+              .replaceAll(RegExp(r'_model.*$'), '')     // Remove _model and everything after
+              .replaceAll(RegExp(r'_\d.*$'), '')        // Fallback: remove _16, _28, etc.
+              .replaceAll('_', ' ')                     // Replace underscores with spaces
+              .replaceAll(RegExp(r'\.onnx'), '')        // Fallback: remove _16, _28, etc.
+              .trim())
+          .join('\n');
+          isFlashing = false;
+        });
     });
   }
 
