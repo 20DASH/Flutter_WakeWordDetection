@@ -176,7 +176,7 @@ String _humanDuration(Duration diff) {
       print("useModel == : $useModel");
 
       await useModel.setKeywordDetectionLicense(
-        "MTc1MjUyNjgwMDAwMA==-RbOr3R66OPByzZxLe7vgM6JDlrrejrgRzbo41+g8qrM=");
+        "MTc1Nzg4MzYwMDAwMA==-lULiXsf2XwqYXN5iJ8XddZTWT/r0T14dWX6zhyWGGO4=");
 
       print("After useModel.setKeywordDetectionLicense:");
 
