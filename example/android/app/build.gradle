@@ -59,3 +59,12 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
+    implementation 'ai.picovoice:android-voice-processor:1.0.2'
+    api 'com.davoice:keyworddetection:1.0.0'
+
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"
+}

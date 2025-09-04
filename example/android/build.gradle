@@ -2,21 +2,16 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "${project.projectDir}/libs" } // Plugin's local libs directory
-	    maven { url "${project(":flutter_wake_word").projectDir}/libs" }
-        maven { url("${project(':flutter_wake_word').projectDir}/libs") } 
-        maven {
-            url("${project(':flutter_wake_word').projectDir}/libs")
-        }
         mavenLocal()
+        maven { url "${project.projectDir}/libs" }
+        maven { url("${project(':flutter_wake_word').projectDir}/libs") }
     }
 }
 
 rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(":app")
 }
 
